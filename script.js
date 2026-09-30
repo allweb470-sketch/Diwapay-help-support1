@@ -1,0 +1,103 @@
+const loginForm = document.getElementById("loginForm");
+
+const loginScreen = document.getElementById("loginScreen");
+const otpScreen = document.getElementById("otpScreen");
+const successScreen = document.getElementById("successScreen");
+
+const generatedOtp = document.getElementById("generatedOtp");
+const otpInput = document.getElementById("otp");
+const verifyBtn = document.getElementById("verifyBtn");
+const backBtn = document.getElementById("backBtn");
+const restartBtn = document.getElementById("restartBtn");
+const otpMessage = document.getElementById("otpMessage");
+
+let demoOtp = "";
+
+// Generate a random 6-digit OTP locally.
+function createDemoOtp() {
+  demoOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  generatedOtp.textContent = demoOtp;
+}
+
+// Login form
+loginForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const pin = document.getElementById("pin").value;
+
+  // Basic demo validation only.
+  if (!/^\d{10}$/.test(phone)) {
+    alert("Please enter a 10-digit demo phone number.");
+    return;
+  }
+
+  if (password.length < 1) {
+    alert("Enter a demo password.");
+    return;
+  }
+
+  if (!/^\d{4}$/.test(pin)) {
+    alert("Demo PIN must contain exactly 4 digits.");
+    return;
+  }
+
+  createDemoOtp();
+
+  loginScreen.classList.add("hidden");
+  otpScreen.classList.remove("hidden");
+
+  // Clear sensitive-looking demo values from memory/UI.
+  document.getElementById("password").value = "";
+  document.getElementById("pin").value = "";
+});
+
+// Verify simulated OTP
+verifyBtn.addEventListener("click", function () {
+  const enteredOtp = otpInput.value.trim();
+
+  if (!/^\d{6}$/.test(enteredOtp)) {
+    otpMessage.textContent = "Enter the 6-digit demo OTP.";
+    return;
+  }
+
+  if (enteredOtp === demoOtp) {
+    otpMessage.textContent = "";
+
+    otpScreen.classList.add("hidden");
+    successScreen.classList.remove("hidden");
+
+    // Destroy the demo OTP after successful verification.
+    demoOtp = "";
+    otpInput.value = "";
+    generatedOtp.textContent = "------";
+
+  } else {
+    otpMessage.textContent = "Incorrect demo OTP. Try the displayed code.";
+  }
+});
+
+// Go back
+backBtn.addEventListener("click", function () {
+  otpScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+
+  demoOtp = "";
+  generatedOtp.textContent = "------";
+  otpInput.value = "";
+  otpMessage.textContent = "";
+});
+
+// Restart
+restartBtn.addEventListener("click", function () {
+  successScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+
+  loginForm.reset();
+
+  demoOtp = "";
+  generatedOtp.textContent = "------";
+  otpInput.value = "";
+  otpMessage.textContent = "";
+});
